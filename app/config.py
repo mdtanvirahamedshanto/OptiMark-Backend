@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     MAX_UPLOAD_SIZE_MB: int = 10
 
+    # Stripe (optional)
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+
+    # First admin (set email to grant admin role on signup)
+    ADMIN_EMAIL: str = ""
+
     class Config:
         env_file = ".env"
         case_sensitive = True

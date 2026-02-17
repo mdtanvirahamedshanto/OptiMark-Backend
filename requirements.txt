@@ -10,6 +10,7 @@ alembic==1.13.1
 # Computer Vision
 opencv-python-headless==4.9.0.80
 numpy==1.26.4
+imutils==0.5.4
 
 # Auth & Security
 python-jose[cryptography]==3.3.0
@@ -25,3 +26,10 @@ aiofiles==23.2.1
 
 # Environment
 python-dotenv==1.0.1
+
+# PDF & Excel export
+reportlab==4.2.0
+openpyxl==3.1.2
+
+# Stripe (optional - for payment)
+stripe==10.0.0

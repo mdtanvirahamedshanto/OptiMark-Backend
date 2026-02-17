@@ -24,12 +24,38 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    role = Column(String(20), default="teacher")  # 'admin' | 'teacher'
     is_subscribed = Column(Boolean, default=False)
-    subscription_plan = Column(String(50), nullable=True)  # e.g., 'free', 'premium'
+    subscription_plan = Column(String(50), nullable=True)  # e.g., '1month', '6month', '1year'
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     exams = relationship("Exam", back_populates="teacher")
+    pending_payments = relationship("PendingPayment", back_populates="user")
+
+
+class PendingPayment(Base):
+    """Manual payment submissions awaiting admin approval."""
+
+    __tablename__ = "pending_payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    plan_id = Column(String(50), nullable=False)  # 1month, 6month, 1year
+    amount = Column(Float, nullable=False)
+    payment_method = Column(String(30), nullable=False)  # bkash, nagad, bank_transfer
+    transaction_id = Column(String(100), nullable=False)
+    sender_name = Column(String(255), nullable=False)
+    sender_phone = Column(String(50), nullable=True)  # For bKash/Nagad
+    sender_email = Column(String(255), nullable=True)
+    status = Column(String(20), default="pending")  # pending, approved, rejected
+    admin_notes = Column(String(500), nullable=True)
+    reviewed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="pending_payments", foreign_keys=[user_id])
 
 
 class Exam(Base):

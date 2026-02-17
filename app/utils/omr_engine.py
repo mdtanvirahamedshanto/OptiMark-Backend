@@ -1,5 +1,5 @@
 """
-OptiMark OMR Engine - Robust OMR processing using OpenCV.
+OptiMark OMR Engine - Robust OMR processing using OpenCV, NumPy, Imutils.
 
 Implements:
 - Four corner marker detection (black squares) for Perspective Transform
@@ -12,6 +12,7 @@ Implements:
 
 import cv2
 import numpy as np
+from imutils.perspective import four_point_transform
 from pathlib import Path
 from typing import Optional, Dict, Tuple, List
 from dataclasses import dataclass, field
@@ -156,12 +157,11 @@ def _find_corner_markers(gray: np.ndarray) -> Optional[np.ndarray]:
 
 
 def _warp_perspective(img: np.ndarray, src_pts: np.ndarray) -> np.ndarray:
-    """Apply perspective transform for top-down view."""
-    dst_pts = np.array([
-        [0, 0], [SHEET_WIDTH, 0], [SHEET_WIDTH, SHEET_HEIGHT], [0, SHEET_HEIGHT]
-    ], dtype=np.float32)
-    M = cv2.getPerspectiveTransform(src_pts, dst_pts)
-    return cv2.warpPerspective(img, M, (SHEET_WIDTH, SHEET_HEIGHT))
+    """Apply perspective transform for top-down view using imutils."""
+    warped = four_point_transform(img, src_pts)
+    if warped.shape[:2] != (SHEET_HEIGHT, SHEET_WIDTH):
+        warped = cv2.resize(warped, (SHEET_WIDTH, SHEET_HEIGHT))
+    return warped
 
 
 def _get_bubble_density(roi: np.ndarray) -> float:

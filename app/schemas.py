@@ -11,7 +11,7 @@ class UserCreate(BaseModel):
     """Schema for user registration."""
 
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=8)
 
 
 class UserResponse(BaseModel):
@@ -31,8 +31,8 @@ class UserResponse(BaseModel):
 class ManualPaymentSubmit(BaseModel):
     """Manual payment submission (bKash, Nagad, Bank Transfer)."""
 
-    plan: str
-    amount: str
+    plan: str = Field(..., pattern="^(1month|6month|1year)$")
+    amount: str = Field(..., min_length=1)
     payment_method: str = Field(..., pattern="^(bkash|nagad|bank_transfer)$")
     transaction_id: str
     sender_name: str
@@ -104,7 +104,7 @@ class ExamCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     subject_code: str = Field(..., min_length=1, max_length=50)
     total_questions: int = Field(default=60, ge=1, le=100)
-    answer_keys: Optional[list[AnswerKeySet]] = None
+    answer_keys: Optional[List[AnswerKeySet]] = None
     # Frontend format: single answer_key as {question_no: "A"|"B"|"C"|"D"}
     answer_key: Optional[Dict[Union[str, int], str]] = None
 
@@ -114,7 +114,7 @@ class ExamCreate(BaseModel):
             raise ValueError("Either answer_keys or answer_key must be provided")
         return self
 
-    def get_answer_keys_list(self) -> list[AnswerKeySet]:
+    def get_answer_keys_list(self) -> List[AnswerKeySet]:
         """Convert to list of AnswerKeySet."""
         if self.answer_keys:
             return self.answer_keys

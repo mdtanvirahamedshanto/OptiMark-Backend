@@ -196,11 +196,10 @@ async def bulk_scan_omr(
             )
         )
 
-    await db.commit()
     return {"results": [r.model_dump() for r in scan_results]}
 
 
-@router.get("", response_model=list[ExamResponse])
+@router.get("", response_model=List[ExamResponse])
 async def list_exams(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
